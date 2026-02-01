@@ -1,0 +1,16 @@
+# Entorno virtual (Pesado y no se sube)
+venv/
+ENV/
+env/
+
+# Archivos temporales de Python (Basura)
+__pycache__/
+*.pyc
+
+# Base de datos (Para que no se suban tus contactos reales)
+data/*.db
+*.db
+
+# Archivos de configuración de editores
+.vscode/
+.idea/
