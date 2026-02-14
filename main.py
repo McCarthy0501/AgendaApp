@@ -1,18 +1,13 @@
-import logic # procesos y logica de la app
-import database # conexicon de base de datos 
-import gui # interfaz de usuario 
+import database
+import gui
 
-
-
-def main () :
-    #llamamos a cada modulo 
+def main():
+    # 1. Aseguramos que la DB esté lista antes de abrir la ventana
+    database.crear_tabla()
     
-    print("inicializando progrma ... ")
-    pass
+    # 2. Arrancamos la interfaz
+    
+    gui.inicializar_interfaz()
 
-
-
-#punto final del script 
 if __name__ == "__main__":
-    main() # llamada a la funcion principal 
-    pass
+    main()
