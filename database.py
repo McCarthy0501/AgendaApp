@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+from notificaciones import mensaje_exito,mensaje_error
 
 def conectar_db():
     try:
@@ -47,9 +48,9 @@ def insertar_contacto(nombre, apellido, cedula, direccion, pais): # <--- Mira el
             valores = (nombre, apellido, cedula, direccion, pais)
             cursor.execute(query, valores)
             conexion.commit()
-            print(f"✅ {nombre} guardado en la base de datos.")
+            mensaje_exito("Operacion Realizada con Exito","Contacto Guardado Satisfactoriamente")
         except Exception as e:
-            print(f"❌ Error al insertar: {e}")
+            mensaje_error("Algo salio Mal","Error al Guardar el Contacto...")
         finally:
             conexion.close()
 
@@ -68,6 +69,28 @@ def obtener_contactos():
         finally:
             conexion.close()
     return contactos
+
+
+
+
+#borrar contacto por cedula
+def borrar_Contacto_Por_Cedula(cedula):
+    conexion= conectar_db()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            cursor.execute("DELETE FROM contactos WHERE cedula = ?", (cedula,))
+            conexion.commit()
+
+            if cursor.rowcount > 0:
+                mensaje_exito("Operacion exitosa","Contacto borrado exitosamente") #notificaciones 
+            else:
+                print("No se encontró ningún contacto con esa cédula.")
+
+        except Exception as e:
+            print(f"Error al intentar borrar: {e}")
+        finally:
+            conexion.close()
 
 
 if __name__ == '__main__':

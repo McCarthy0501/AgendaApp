@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from logic import guardar_datos
+from notificaciones import mensaje_exito,mensaje_error
 
 #colores de la interfaz
 ctk.set_appearance_mode("dark")
@@ -41,6 +42,93 @@ class VentanaRegistro(ctk.CTkToplevel):
 
         self.btn_guardar = ctk.CTkButton(self, text="GUARDAR", fg_color="green", command=lambda:guardar_datos(self))
         self.btn_guardar.pack(pady=30)
+
+
+
+
+#eliminar contacto 
+class VentanaEliminacion(ctk.CTkToplevel):
+    def __init__(self, master, *args, **kwargs):
+        # 1. Pasamos el 'master' (la ventana principal) explícitamente
+        super().__init__(master, *args, **kwargs)
+        
+        self.title("Agenda de Registros")
+        self.geometry("450x550")
+        
+        # 2. Obligamos a la ventana a saltar al frente
+        self.attributes("-topmost", True)
+        self.focus() # Le da el foco para que puedas escribir de una
+        
+        # --- TÍTULO ---
+        self.label_tit = ctk.CTkLabel(self, text="Eliminar Contacto", font=("Roboto", 20, "bold"))
+        self.label_tit.pack(pady=20)
+
+            # --- DENTRO DE TU CLASE VentanaEliminacion ---
+
+        # 1. Obtenemos la lista de la base de datos
+        import database
+        datos = database.obtener_contactos()
+
+        opciones = [] #creo una lsita vacia 
+
+        for i in datos: #recorro la consulda de la base de datos y ordeno los datos traidos
+            formato= f'{i[0]}  {i[1]}  V- {i[2]}'
+            opciones.append(formato) #agg los datos en la lista vacia 
+        
+        #mensaje de error
+        if not opciones:
+            opciones=['no hay contactos para borrar']
+
+      # 3. Agregar el Select (OptionMenu)
+        self.label_sel = ctk.CTkLabel(self, text="Seleccione el contacto a eliminar:", font=("Roboto", 14))
+        self.label_sel.pack(pady=10)
+
+
+        #el select donde se muestran los contactos guardados
+        self.select_eliminar = ctk.CTkOptionMenu(
+            self, 
+            values=opciones, #pasamos la lista con los contactos
+            width=300
+        )
+        self.select_eliminar.pack(pady=15)
+
+        # 4. Botón de acción
+        self.btn_confirmar = ctk.CTkButton(
+            self, 
+            text="Eliminar de la Base de Datos",
+            fg_color="#A82424", # Rojo oscuro para advertencia
+            command=self.confirmar_proceso #funcion de borrar el contacto  aun en proceso
+        )
+        self.btn_confirmar.pack(pady=20)
+
+
+#confirmacion de la operacion de borrado
+    def confirmar_proceso(self):
+        seleccion = self.select_eliminar.get()
+        
+        if seleccion == 'No hay contactos para borrar':
+            return
+
+        try:
+            # 1. Extraemos la cédula
+            # Buscamos lo que está entre (V-)
+            cedula_a_borrar = seleccion.split("V-")[1].replace(" ", "")
+            
+            
+            # 2. Llamamos a tu función de database.py
+            import database
+            database.borrar_Contacto_Por_Cedula(cedula_a_borrar)
+            
+            # 3. Refrescamos la ventana principal (el master)
+            self.master.mostrar_contactos()
+            
+            # 4. Cerramos la ventana de eliminación
+            self.destroy()
+            
+        except Exception as e:
+            print(f"Error al procesar el borrado: {e}")
+            
+
 
 
 
@@ -96,6 +184,8 @@ class AgendaApp (ctk.CTk):
         for persona in datos:
             nombre_completo = f"Nombre : {persona[0]} | Apellido : {persona[1]} | "
             info_detallada = f"Cédula de Identidad V-{persona[2]}  |  Direccion: {persona[3]}  |  Pais: {persona[4]}"
+            mensaje_exito("Proceso Realizado con exito ","Contactos actualizados")
+            
             
             # Creamos un pequeño frame para cada contacto para que se vea ordenado
             fila = ctk.CTkFrame(self.frame_lista)
@@ -109,7 +199,7 @@ class AgendaApp (ctk.CTk):
     
     #boton de eliminar
     def eliminar_contacto(self):
-        print("Eliminando...")
+        VentanaEliminacion(self)
     #boton de modificar
     def modificar_contacto(self):
         print("Modificando...")

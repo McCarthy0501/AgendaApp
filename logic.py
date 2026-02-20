@@ -1,4 +1,4 @@
-
+from notificaciones import mensaje_exito,mensaje_error
 
 #funcion de validar datos
 def validar_campos(**datos):
@@ -7,24 +7,25 @@ def validar_campos(**datos):
         #print(f"{campo}")
 
         if valor.strip() == "":
-            return False,f"Falta el campo {campo}"
+            return False,mensaje_error("Algo Salio Mal","Los Campos del Formulario no deben quedar Vacios")
 
         #validacion de la cedula
         if campo.lower() == "cedula":
             if not valor.isdigit():
-                return False,f"el campo {campo} debe ser numerico "
+                return False,mensaje_error("Algo Salio Mal",f"El Campos de {campo} debe ser Numerico ")
             if len(valor)<5:
-                return False,f"cedula demasiado corta"
+                return False,mensaje_error("Algo Salio Mal",f"El campo {campo} debe tener mas de 5 Caracteres Numericos")
 
         #validacion de los textos quita espacionn en blanco y se asegura que sea texto y no numeros
         if campo.lower() in ["nombre","apellido"]:
             if len(valor.strip())<2 or  not valor.replace(" ","").isalpha():
-                return False,f"el valor del campo {campo} debe tener mas de 2 caracteres y deben ser caracteres de texto  "
+                return False,mensaje_error("Algo Salio Mal",f"El Campo {campo} debe tener mas de 2 caracteres y deben ser caracteres de texto  ")
+               
         
         #validacion de la direccion y pais
         if campo.lower() in ["direccion","pais"]:
             if len(valor.strip())<3 or  not valor.replace(" ","").isalpha():
-                return False,f"el valor del campo {campo} debe tener mas de 2 caracteres y deben ser caracteres de texto  "
+                return False,mensaje_error("Algo Salio Mal",f"El Campo {campo} debe tener mas de 2 caracteres y deben ser caracteres de texto  ")
         
 
 
@@ -54,7 +55,7 @@ def guardar_datos(ventana):
 
         #mensaje de error
     if not exito:
-            print(f'{mensaje}')
+            mensaje_error("Algo salio Mal","Error al Guardar el Contacto")
             return
 
         
@@ -63,6 +64,10 @@ def guardar_datos(ventana):
     import database
     database.insertar_contacto(nom, ape, ced, dire, pais)
         
-        # 4. AHORA SÍ, cierras la ventana
-    print("Guardado. Cerrando formulario...")
+   
     ventana.destroy()
+
+
+
+
+
